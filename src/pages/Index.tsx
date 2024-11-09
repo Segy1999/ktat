@@ -33,16 +33,16 @@ const Index = () => {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
             <Typewriter
               options={{
-                strings: ["Welcome to KowTattys"],
+                strings: ["KowTattys"],
                 autoStart: true,
                 loop: true,
                 cursor: "|",
-                delay: 50,
+                delay: 100,
               }}
             />
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-            Experience the perfect blend of artistry and precision at our premium tattoo studio
+            Where Art Meets Skin
           </p>
           <Link
             to="/booking"
