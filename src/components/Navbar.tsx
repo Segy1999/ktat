@@ -25,7 +25,7 @@ const Navbar = () => {
     <nav className="fixed w-full z-50 bg-background/80 backdrop-blur-sm border-b">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="font-playfair text-2xl font-bold">
+          <Link to="/" className="font-great-vibes text-2xl font-bold">
             Kow Tattys
           </Link>
           
