@@ -61,7 +61,7 @@ export default {
       fontFamily: {
         playfair: ["Playfair Display", "serif"],
         inter: ["Inter", "sans-serif"],
-        great-vibes: ["Great Vibes", "cursive"],
+        greatVibes: ["Great Vibes", "cursive"],
       },
       borderRadius: {
         lg: "var(--radius)",
