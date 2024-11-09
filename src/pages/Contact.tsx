@@ -15,7 +15,7 @@ const Contact = () => {
     {
       icon: <MapPin className="w-5 h-5" />,
       title: "Address",
-      content: "123 Tattoo Street, Art District, CA 90210"
+      content: "1149 Davenport Rd, Toronto, ON 90210"
     },
     {
       icon: <Phone className="w-5 h-5" />,
@@ -25,7 +25,7 @@ const Contact = () => {
     {
       icon: <Mail className="w-5 h-5" />,
       title: "Email",
-      content: "info@inkstudio.com"
+      content: "kowtattys@gmail.com"
     },
     {
       icon: <Clock className="w-5 h-5" />,
