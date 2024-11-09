@@ -1,61 +1,21 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import Particles from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
-import { useCallback } from "react";
-import type { Engine } from "@tsparticles/engine";
+import { Particles } from "@/components/ui/particles";
 import Typewriter from "typewriter-effect";
 
 const Index = () => {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
-  }, []);
-
   return (
     <div className="min-h-screen">
       <section className="relative h-screen flex items-center justify-center bg-black text-white overflow-hidden">
         <Particles
-          id="tsparticles"
-          init={particlesInit}
-          options={{
-            background: {
-              color: {
-                value: "#000000",
-              },
-            },
-            fpsLimit: 120,
-            particles: {
-              color: {
-                value: "#6B46C1",
-              },
-              links: {
-                color: "#6B46C1",
-                distance: 150,
-                enable: true,
-                opacity: 0.5,
-                width: 1,
-              },
-              move: {
-                enable: true,
-                speed: 1,
-              },
-              number: {
-                density: {
-                  enable: true,
-                  factor: 800,
-                },
-                value: 80,
-              },
-              opacity: {
-                value: 0.5,
-              },
-              size: {
-                value: { min: 1, max: 3 },
-              },
-            },
-          }}
+          className="absolute inset-0"
+          quantity={100}
+          staticity={50}
+          ease={50}
+          color="#6B46C1"
         />
+        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
