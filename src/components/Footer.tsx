@@ -43,10 +43,10 @@ const Footer = () => {
               <a href="#" className="text-muted-foreground hover:text-foreground">
                 <Facebook className="w-6 h-6" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground">
+              <a href="https://www.instagram.com/kowtattys/" className="text-muted-foreground hover:text-foreground">
                 <Instagram className="w-6 h-6" />
               </a>
-              <a href="mailto:info@inkstudio.com" className="text-muted-foreground hover:text-foreground">
+              <a href="mailto:kowtattys@gmail.com" className="text-muted-foreground hover:text-foreground">
                 <Mail className="w-6 h-6" />
               </a>
             </div>
