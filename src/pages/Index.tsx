@@ -27,7 +27,7 @@ const Index = () => {
               options={{
                 strings: ["Transform Your Vision Into Art"],
                 autoStart: true,
-                loop: false,
+                loop: true,
                 cursor: "|",
                 delay: 50,
               }}
