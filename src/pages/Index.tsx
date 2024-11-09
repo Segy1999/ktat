@@ -30,7 +30,7 @@ const Index = () => {
           transition={{ duration: 0.8 }}
           className="container mx-auto px-4 text-center relative z-10"
         >
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-doto mb-6">
             <Typewriter
               options={{
                 strings: ["KowTattys"],
