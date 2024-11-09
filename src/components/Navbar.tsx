@@ -25,8 +25,8 @@ const Navbar = () => {
     <nav className="fixed w-full z-50 bg-background/80 backdrop-blur-sm border-b">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="font-pacifico text-4xl font-bold">
-            Kow Tattys
+          <Link to="/" className="font-doto text-4xl font-bold">
+            KowTattys
           </Link>
           
           {/* Desktop Menu */}
