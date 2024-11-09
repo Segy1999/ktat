@@ -39,10 +39,7 @@ const Footer = () => {
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Connect With Us</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="text-muted-foreground hover:text-foreground">
-                <Facebook className="w-6 h-6" />
-              </a>
+            <div className="flex space-x-4">              
               <a href="https://www.instagram.com/kowtattys/" className="text-muted-foreground hover:text-foreground">
                 <Instagram className="w-6 h-6" />
               </a>
