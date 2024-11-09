@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X, Moon, Sun } from "lucide-react";
+import { Switch } from "@/components/ui/switch"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +28,7 @@ const Navbar = () => {
           <Link to="/" className="font-playfair text-2xl font-bold">
             Kow Tattys
           </Link>
-
+          
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {menuItems.map((item) => (
@@ -39,12 +40,16 @@ const Navbar = () => {
                 {item.title}
               </Link>
             ))}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-accent transition-colors"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            {/* Theme Toggle Switch */}
+            <div className="flex items-center space-x-2">
+              <Sun size={16} className="text-foreground/80" />
+              <Switch
+                checked={isDark}
+                onCheckedChange={toggleTheme}
+                className="data-[state=checked]:bg-slate-800"
+              />
+              <Moon size={16} className="text-foreground/80" />
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -77,12 +82,16 @@ const Navbar = () => {
                   {item.title}
                 </Link>
               ))}
-              <button
-                onClick={toggleTheme}
-                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-foreground/80 hover:text-foreground hover:bg-accent transition-colors"
-              >
-                {isDark ? "Light Mode" : "Dark Mode"}
-              </button>
+              {/* Mobile Theme Toggle */}
+              <div className="flex items-center space-x-2 px-3 py-2">
+                <Sun size={16} className="text-foreground/80" />
+                <Switch
+                  checked={isDark}
+                  onCheckedChange={toggleTheme}
+                  className="data-[state=checked]:bg-slate-800"
+                />
+                <Moon size={16} className="text-foreground/80" />
+              </div>
             </div>
           </motion.div>
         )}
