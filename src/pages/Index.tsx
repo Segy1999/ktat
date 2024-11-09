@@ -105,7 +105,7 @@ const Index = () => {
             </p>
             <Link
               to="/contact"
-              className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-tattoo-purple rounded-full hover:bg-opacity-90 transition-colors"
+              className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue-500 rounded-full hover:bg-opacity-90 transition-colors"
             >
               Get in Touch
               <ArrowRight className="ml-2" size={20} />
