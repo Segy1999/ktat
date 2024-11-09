@@ -44,7 +44,7 @@ const Index = () => {
               number: {
                 density: {
                   enable: true,
-                  value_area: 800, // Changed from 'area' to 'value_area'
+                  area: 800,
                 },
                 value: 80,
               },
