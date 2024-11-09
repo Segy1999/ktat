@@ -46,7 +46,7 @@ const Index = () => {
           </p>
           <Link
             to="/booking"
-            className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-tattoo-blue rounded-full hover:bg-opacity-90 transition-colors"
+            className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue rounded-full hover:bg-opacity-90 transition-colors"
           >
             Book Now
             <ArrowRight className="ml-2" size={20} />
