@@ -62,7 +62,7 @@ export default {
         playfair: ["Playfair Display", "serif"],
         inter: ["Inter", "sans-serif"],
         greatVibes: ["Great Vibes", "cursive"],
-        pacifico: ["Pacifico", cursive;],
+        pacifico: ["Pacifico", "cursive"],
       },
       borderRadius: {
         lg: "var(--radius)",
