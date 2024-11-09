@@ -63,6 +63,7 @@ export default {
         inter: ["Inter", "sans-serif"],
         greatVibes: ["Great Vibes", "cursive"],
         pacifico: ["Pacifico", "cursive"],
+        doto: ["Doto", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
