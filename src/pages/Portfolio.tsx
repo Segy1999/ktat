@@ -3,12 +3,11 @@ import { ArrowRight } from "lucide-react";
 
 const Portfolio = () => {
   const portfolioItems = [
-    { id: 1, title: "Traditional", description: "Classic tattoo designs" },
-    { id: 2, title: "Neo-Traditional", description: "Modern take on classics" },
-    { id: 3, title: "Blackwork", description: "Bold black designs" },
-    { id: 4, title: "Watercolor", description: "Artistic watercolor style" },
-    { id: 5, title: "Minimalist", description: "Simple, clean designs" },
-    { id: 6, title: "Japanese", description: "Traditional Japanese style" },
+    { id: 1, title: "Traditional", description: "Classic tattoo designs", image: "/images/portfolio/boondocks.png" },
+    { id: 2, title: "Neo-Traditional", description: "Modern take on classics", image: "/images/portfolio/dragon.png" },
+    { id: 3, title: "Blackwork", description: "Bold black designs", image: "/images/portfolio/frsnchise.png" },
+    { id: 4, title: "Watercolor", description: "Artistic watercolor style", image: "/images/portfolio/luvers.png" },
+    { id: 5, title: "Minimalist", description: "Simple, clean designs", image: "/images/portfolio/naruto.png" },
   ];
 
   return (
@@ -32,8 +31,12 @@ const Portfolio = () => {
               transition={{ delay: item.id * 0.1 }}
               className="group relative"
             >
-              <div className="aspect-square bg-accent rounded-lg overflow-hidden">
-                <div className="w-full h-full bg-accent/20" />
+              <div className="aspect-square rounded-lg overflow-hidden">
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 rounded-lg">
                 <h3 className="text-white text-xl font-bold mb-2">{item.title}</h3>

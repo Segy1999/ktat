@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">Ink Studio</h3>
+            <h3 className="text-xl font-bold mb-4">Kow Tattys</h3>
             <p className="text-muted-foreground">
               Creating unique and meaningful tattoo art since 2020.
             </p>
@@ -53,7 +53,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Ink Studio. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Kow Tattys. All rights reserved.</p>
         </div>
       </div>
     </footer>
