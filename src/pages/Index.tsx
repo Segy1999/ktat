@@ -1,13 +1,62 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import Particles from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
+import { useCallback } from "react";
+import type { Engine } from "@tsparticles/engine";
+import Typewriter from "typewriter-effect";
 
 const Index = () => {
+  const particlesInit = useCallback(async (engine: Engine) => {
+    await loadSlim(engine);
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center hero-gradient text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/50" />
+      <section className="relative h-screen flex items-center justify-center bg-black text-white overflow-hidden">
+        <Particles
+          id="tsparticles"
+          init={particlesInit}
+          options={{
+            background: {
+              color: {
+                value: "#000000",
+              },
+            },
+            fpsLimit: 120,
+            particles: {
+              color: {
+                value: "#6B46C1",
+              },
+              links: {
+                color: "#6B46C1",
+                distance: 150,
+                enable: true,
+                opacity: 0.5,
+                width: 1,
+              },
+              move: {
+                enable: true,
+                speed: 1,
+              },
+              number: {
+                density: {
+                  enable: true,
+                  area: 800,
+                },
+                value: 80,
+              },
+              opacity: {
+                value: 0.5,
+              },
+              size: {
+                value: { min: 1, max: 3 },
+              },
+            },
+          }}
+        />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -15,7 +64,15 @@ const Index = () => {
           className="container mx-auto px-4 text-center relative z-10"
         >
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
-            Transform Your Vision Into Art
+            <Typewriter
+              options={{
+                strings: ["Transform Your Vision Into Art"],
+                autoStart: true,
+                loop: false,
+                cursor: "|",
+                delay: 50,
+              }}
+            />
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
             Experience the perfect blend of artistry and precision at our premium tattoo studio
