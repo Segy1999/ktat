@@ -9,7 +9,7 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold mb-4">Kow Tattys</h3>
             <p className="text-muted-foreground">
-              Creating unique and meaningful tattoo art since 2020.
+              Creating unique and meaningful tattoo experiences since 2020.
             </p>
           </div>
           <div>
