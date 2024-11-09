@@ -14,7 +14,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center bg-black text-white overflow-hidden">
         <Particles
           id="tsparticles"
@@ -44,7 +43,7 @@ const Index = () => {
               number: {
                 density: {
                   enable: true,
-                  area: 800,
+                  factor: 800,
                 },
                 value: 80,
               },
