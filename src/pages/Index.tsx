@@ -11,6 +11,7 @@ const Index = () => {
     { id: 3, image: "/images/home/h3.jpeg", alt: "Featured Tattoo 3" },
     { id: 4, image: "/images/home/h4.jpeg", alt: "Featured Tattoo 4" },
     { id: 5, image: "/images/home/h5.jpeg", alt: "Featured Tattoo 5" },
+    { id: 5, image: "/images/home/h6.jpeg", alt: "Featured Tattoo 5" },
   ];
 
   return (
