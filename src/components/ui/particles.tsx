@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -74,9 +72,11 @@ export const Particles: React.FC<ParticlesProps> = ({
   const context = useRef<CanvasRenderingContext2D | null>(null);
   const circles = useRef<any[]>([]);
   const mousePosition = MousePosition();
-  const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const mouse = useRef<{ x: number; y: number; isPressed: boolean }>({ x: 0, y: 0, isPressed: false });
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
+  const [isHovering, setIsHovering] = useState(false);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -84,10 +84,38 @@ export const Particles: React.FC<ParticlesProps> = ({
     }
     initCanvas();
     animate();
-    window.addEventListener("resize", initCanvas);
+    
+    // Debounced resize handler
+    const handleResize = () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      resizeTimeoutRef.current = setTimeout(() => {
+        initCanvas();
+      }, 100);
+    };
+
+    window.addEventListener("resize", handleResize);
+    
+    // Handle visibility change
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current);
+        }
+      } else {
+        initCanvas();
+      }
+    };
+    
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      window.removeEventListener("resize", initCanvas);
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
     };
   }, [color]);
 
@@ -98,6 +126,37 @@ export const Particles: React.FC<ParticlesProps> = ({
   useEffect(() => {
     initCanvas();
   }, [refresh]);
+
+  // Add mouse event handlers
+  useEffect(() => {
+    const handleMouseDown = () => {
+      mouse.current.isPressed = true;
+    };
+
+    const handleMouseUp = () => {
+      mouse.current.isPressed = false;
+    };
+
+    const handleTouchStart = () => {
+      mouse.current.isPressed = true;
+    };
+
+    const handleTouchEnd = () => {
+      mouse.current.isPressed = false;
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   const initCanvas = () => {
     resizeCanvas();
@@ -209,6 +268,7 @@ export const Particles: React.FC<ParticlesProps> = ({
   const animate = () => {
     clearContext();
     circles.current.forEach((circle: any, i: number) => {
+      // Edge detection logic
       const edge = [
         circle.x + circle.translateX - circle.size,
         canvasSize.current.w - circle.x - circle.translateX - circle.size,
@@ -217,9 +277,33 @@ export const Particles: React.FC<ParticlesProps> = ({
       ];
       const closestEdge = edge.reduce((a, b) => Math.min(a, b));
       const remapClosestEdge = parseFloat(
-        remapValue(closestEdge, 0, 20, 0, 1).toFixed(2),
+        remapValue(closestEdge, 0, 20, 0, 1).toFixed(2)
       );
-      if (remapClosestEdge > 1) {
+
+      // Enhanced particle behavior
+      if (mouse.current.isPressed) {
+        // Create a repulsion effect when mouse is pressed
+        const dx = circle.x - mouse.current.x;
+        const dy = circle.y - mouse.current.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const force = Math.max(100 - distance, 0) / 10;
+        
+        circle.dx += (dx / distance) * force * 0.2;
+        circle.dy += (dy / distance) * force * 0.2;
+      }
+
+      // Apply velocity with damping
+      circle.dx *= 0.95;
+      circle.dy *= 0.95;
+      
+      // Update position
+      circle.x += circle.dx + vx;
+      circle.y += circle.dy + vy;
+      
+      // Interactive transparency
+      if (isHovering) {
+        circle.alpha = circle.targetAlpha * 1.5;
+      } else if (remapClosestEdge > 1) {
         circle.alpha += 0.02;
         if (circle.alpha > circle.targetAlpha) {
           circle.alpha = circle.targetAlpha;
@@ -227,17 +311,17 @@ export const Particles: React.FC<ParticlesProps> = ({
       } else {
         circle.alpha = circle.targetAlpha * remapClosestEdge;
       }
-      circle.x += circle.dx + vx;
-      circle.y += circle.dy + vy;
+
+      // Apply magnetic effect
+      const magnetism = mouse.current.isPressed ? circle.magnetism * 0.5 : circle.magnetism;
       circle.translateX +=
-        (mouse.current.x / (staticity / circle.magnetism) - circle.translateX) /
-        ease;
+        (mouse.current.x / (staticity / magnetism) - circle.translateX) / ease;
       circle.translateY +=
-        (mouse.current.y / (staticity / circle.magnetism) - circle.translateY) /
-        ease;
+        (mouse.current.y / (staticity / magnetism) - circle.translateY) / ease;
 
       drawCircle(circle, true);
 
+      // Particle regeneration logic
       if (
         circle.x < -circle.size ||
         circle.x > canvasSize.current.w + circle.size ||
@@ -254,11 +338,33 @@ export const Particles: React.FC<ParticlesProps> = ({
 
   return (
     <div
-      className={cn("pointer-events-none fixed inset-0", className)}
+      className={cn("fixed inset-0", className)}
       ref={canvasContainerRef}
-      aria-hidden="true"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: 'hidden'
+      }}
     >
-      <canvas ref={canvasRef} className="h-full w-full" />
+      <canvas 
+        ref={canvasRef} 
+        className="h-full w-full"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
+        }}
+      />
     </div>
   );
 };
+
+
+

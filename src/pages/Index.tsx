@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Particles } from "@/components/ui/particles";
+import ShootingStar from "@/components/ui/shooting-star";
 import Typewriter from "typewriter-effect";
 
 const Index = () => {
@@ -11,19 +12,20 @@ const Index = () => {
     { id: 3, image: "/images/home/h3.jpeg", alt: "Featured Tattoo 3" },
     { id: 4, image: "/images/home/h4.jpeg", alt: "Featured Tattoo 4" },
     { id: 5, image: "/images/home/h5.jpeg", alt: "Featured Tattoo 5" },
-    { id: 5, image: "/images/home/h6.jpeg", alt: "Featured Tattoo 5" },
+    { id: 6, image: "/images/home/h6.jpeg", alt: "Featured Tattoo 6" },
   ];
 
   return (
     <div className="min-h-screen">
       <section className="relative h-screen flex items-center justify-center bg-black text-white overflow-hidden">
         <Particles
-          className="absolute inset-0"
+          className="absolute inset-0 z-0"
           quantity={1000}
           staticity={50}
           ease={50}
           color="#ffffff"
         />
+        <ShootingStar />
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}

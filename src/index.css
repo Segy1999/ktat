@@ -91,3 +91,12 @@
     transform: translateY(0);
   }
 }
+@keyframes shooting-star {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(var(--end-x), var(--end-y));
+    opacity: 0;
+  }
+}
