@@ -67,7 +67,7 @@ const ShootingStar = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() < 0.9) {
+      if (Math.random() < 0.7) {
         const newObject = createCelestialObject();
         setCelestialObjects(prev => [...prev, newObject]);
         

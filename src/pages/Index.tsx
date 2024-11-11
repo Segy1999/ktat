@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Particles } from "@/components/ui/particles";
 import ShootingStar from "@/components/ui/shooting-star";
 import Typewriter from "typewriter-effect";
+import FeaturedWorkSection from '@/components/ui/featuredworksection';
 
 const Index = () => {
   const featuredWorks = [
@@ -57,45 +58,7 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* Featured Work Preview */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Featured Artworks
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredWorks.map((work) => (
-              <motion.div
-                key={work.id}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: work.id * 0.2 }}
-                className="relative group overflow-hidden rounded-lg"
-              >
-                <img 
-                  src={work.image} 
-                  alt={work.alt} 
-                  className="w-full h-full object-cover rounded-lg"
-                />
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <p className="text-white text-lg font-medium">View Details</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link
-              to="/portfolio"
-              className="inline-flex items-center text-lg font-medium text-foreground hover:text-tattoo-purple transition-colors"
-            >
-              View Full Portfolio
-              <ArrowRight className="ml-2" size={20} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
+      <FeaturedWorkSection />
       {/* About Preview */}
       <section className="py-20 bg-accent">
         <div className="container mx-auto px-4">
