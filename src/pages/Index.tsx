@@ -17,10 +17,11 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen">
-      <section className="relative h-screen flex items-center justify-center bg-black text-white overflow-hidden">
+    <div className="relative min-h-screen">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center bg-black text-white">
         <Particles
-          className="absolute inset-0 z-0"
+          className="absolute inset-0"
           quantity={1000}
           staticity={50}
           ease={50}
@@ -32,7 +33,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="container mx-auto px-4 text-center relative z-10"
+          className="container mx-auto px-4 text-center relative z-20"
         >
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-doto mb-6">
             <Typewriter
@@ -58,9 +59,13 @@ const Index = () => {
         </motion.div>
       </section>
 
-      <FeaturedWorkSection />
-      {/* About Preview */}
-      <section className="py-20 bg-accent">
+      {/* Featured Work Section - Now outside the hero section */}
+      <div className="relative z-10">
+        <FeaturedWorkSection />
+      </div>
+
+      {/* About Preview - Now outside the hero section */}
+      <section className="relative z-10 py-20 bg-accent">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">

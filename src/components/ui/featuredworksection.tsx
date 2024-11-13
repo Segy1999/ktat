@@ -56,7 +56,7 @@ const FeaturedWorkSection = () => {
         <div className="text-center mt-12">
           <Link
             to="/portfolio"
-            className="inline-flex items-center text-lg font-medium text-foreground hover:text-tattoo-purple transition-colors"
+            className="inline-flex items-center text-lg font-medium text-foreground hover:text-tattoo-blue transition-colors"
           >
             View Full Portfolio
             <ArrowRight className="ml-2" size={20} />
