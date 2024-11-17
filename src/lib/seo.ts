@@ -1,23 +1,23 @@
 export const defaultSEO = {
-  title: 'Professional Tattoo Artist Portfolio',
+  title: 'Kow Tattys | Torontos premiere tatoo experience',
   description: 'Explore unique tattoo designs and book your consultation. Specializing in custom tattoos and various styles.',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://yourdomain.com',
-    site_name: 'Your Tattoo Studio Name',
+    url: 'https://ktattys.netlify.app',
+    site_name: 'Kow Tattys',
     images: [
       {
-        url: 'https://yourdomain.com/og-image.jpg',
+        src: 'public/portfolio/ktt-logo-main.png',
         width: 1200,
         height: 630,
-        alt: 'Tattoo Portfolio',
+        alt: 'Kow Tattys Logo',
       },
     ],
   },
-  twitter: {
-    handle: '@yourtwitterhandle',
-    site: '@yourtwitterhandle',
+  instagram: {
+    handle: '@KowTattys',
+    site: 'https://www.instagram.com/kowtattys/',
     cardType: 'summary_large_image',
   },
 };

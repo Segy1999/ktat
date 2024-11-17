@@ -23,19 +23,17 @@ export const useSupabase = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Booking error:', error);
+        throw error;
+      }
       
-      toast({
-        title: 'Booking Submitted',
-        description: 'We will contact you shortly to confirm your appointment.',
-      });
-
       return data;
     } catch (error) {
-      handleError(error as Error);
-      return null;
+      console.error('Error creating booking:', error);
+      throw error;
     }
-  }, [handleError, toast]);
+  }, []);
 
   const uploadImage = useCallback(async (file: File, path: string) => {
     try {
