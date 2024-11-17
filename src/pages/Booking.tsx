@@ -8,14 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { useSupabase } from "@/hooks/use-supabase";
 
 interface FormData {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  instagram: string;
   date: Date | undefined;
   specialRequests: string;
   photos: FileList | null;
@@ -24,12 +26,14 @@ interface FormData {
 }
 
 const Booking = () => {
+  const { createBooking, uploadImage } = useSupabase();
   const form = useForm<FormData>({
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
       phone: "",
+      instagram: "",
       date: undefined,
       specialRequests: "",
       photos: null,
@@ -38,9 +42,39 @@ const Booking = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-    toast.success("Booking request sent! We'll contact you soon.");
+  const onSubmit = async (data: FormData) => {
+    try {
+      // Upload reference photos if provided
+      let referencePhotos: string[] = [];
+      if (data.photos) {
+        const files = Array.from(data.photos);
+        const uploadPromises = files.map(file => 
+          uploadImage(file, 'reference-photos')
+        );
+        const urls = await Promise.all(uploadPromises);
+        referencePhotos = urls.filter((url): url is string => url !== null);
+      }
+
+      // Create booking
+      await createBooking({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        instagram: data.instagram || null,
+        preferred_date: data.date?.toISOString() || null,
+        special_requests: data.specialRequests || null,
+        reference_photos: referencePhotos.length > 0 ? referencePhotos : null,
+        referral_source: data.referralSource || null,
+        other_referral: data.otherReferralExplanation || null,
+        status: 'pending'
+      });
+
+      // Reset form on success
+      form.reset();
+    } catch (error) {
+      console.error('Error submitting booking:', error);
+    }
   };
 
   return (
@@ -109,10 +143,27 @@ const Booking = () => {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone</FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input type="tel" {...field} />
+                          <Input placeholder="Your phone number" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="instagram"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Instagram Handle (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="@yourusername" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Share your Instagram handle to show us your style
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}

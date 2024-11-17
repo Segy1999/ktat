@@ -59,12 +59,10 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* Featured Work Section - Now outside the hero section */}
-      <div className="relative z-10">
-        <FeaturedWorkSection />
-      </div>
+      {/* Featured Work Section */}
+      <FeaturedWorkSection />
 
-      {/* About Preview - Now outside the hero section */}
+      {/* About Section */}
       <section className="relative z-10 py-20 bg-accent">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
