@@ -28,7 +28,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    
+    /* Type Declarations */
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": ["src", "vite.config.ts"]
 }
