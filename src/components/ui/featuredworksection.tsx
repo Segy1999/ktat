@@ -31,10 +31,10 @@ const FeaturedWorkSection = () => {
           {featuredWorks.map((work) => (
             <div
               key={work.id}
-              className="group relative aspect-[3/4] rounded-xl border border-black/[0.1] bg-background dark:border-white/[0.2] hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300"
+              className="group relative aspect-[3/4] rounded-xl border border-black/[0.1] bg-white/80 dark:bg-background dark:border-white/[0.2] hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300"
             >
               <div className="absolute inset-0 p-6 sm:p-8 flex flex-col">
-                <h3 className="text-xl font-semibold text-foreground mb-4 relative z-10">
+                <h3 className="text-xl font-semibold text-black dark:text-foreground mb-4 relative z-10">
                   {work.alt}
                 </h3>
                 
@@ -52,10 +52,10 @@ const FeaturedWorkSection = () => {
                 </div>
 
                 <div className="mt-4 flex items-center justify-between relative z-10">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-black/70 dark:text-muted-foreground">
                     Click to view details
                   </span>
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-sm font-medium text-black dark:text-foreground">
                     →
                   </span>
                 </div>
@@ -74,7 +74,7 @@ const FeaturedWorkSection = () => {
         <div className="text-center mt-8 sm:mt-12 relative z-30">
           <Link
             to="/portfolio"
-            className="inline-flex items-center text-base sm:text-lg font-medium text-foreground hover:text-tattoo-blue transition-colors"
+            className="inline-flex items-center text-base sm:text-lg font-medium text-black hover:text-tattoo-blue dark:text-foreground dark:hover:text-tattoo-blue transition-colors"
           >
             View Full Portfolio
             <ArrowRight className="ml-2" size={20} />
@@ -85,8 +85,8 @@ const FeaturedWorkSection = () => {
           open={!!selectedWork} 
           onOpenChange={() => setSelectedWork(null)}
         >
-          <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto bg-background p-0 rounded-lg overflow-hidden">
-            <div className="relative w-full h-full">
+          <DialogContent className="sm:max-w-[90vw] sm:max-h-[90vh] w-auto h-auto bg-background p-0 rounded-lg overflow-hidden">
+            <div className="relative flex items-center justify-center min-h-[50vh] sm:min-h-[80vh]">
               <button
                 onClick={() => setSelectedWork(null)}
                 className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors z-10"
@@ -94,11 +94,12 @@ const FeaturedWorkSection = () => {
                 <X size={24} />
               </button>
               {selectedWork && (
-                <div className="relative w-full h-full">
+                <div className="relative w-full h-full flex flex-col items-center justify-center">
                   <img
                     src={selectedWork.image}
                     alt={selectedWork.alt}
-                    className="w-full h-full object-contain"
+                    className="max-w-full max-h-[80vh] object-contain"
+                    style={{ margin: 'auto' }}
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-black/80 to-transparent">
                     <h3 className="text-lg sm:text-xl font-semibold text-white">
