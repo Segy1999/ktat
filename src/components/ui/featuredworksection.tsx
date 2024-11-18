@@ -31,7 +31,7 @@ const FeaturedWorkSection = () => {
           {featuredWorks.map((work) => (
             <div
               key={work.id}
-              className="group relative aspect-[3/4] rounded-xl border border-black/[0.1] bg-white/80 dark:bg-background dark:border-white/[0.2] hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300"
+              className="group relative aspect-[3/4] rounded-xl border border-black/[0.1] bg-[#FFFAF0] dark:bg-background dark:border-white/[0.2] hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300"
             >
               <div className="absolute inset-0 p-6 sm:p-8 flex flex-col">
                 <h3 className="text-xl font-semibold text-black dark:text-foreground mb-4 relative z-10">
