@@ -5,40 +5,58 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function Login() {
-  const navigate = useNavigate();
+export default function AdminLogin() {
   const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // First get the email associated with the username
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('username', formData.username)
+        .eq('role', 'admin')
+        .single();
+
+      if (profileError || !profileData) {
+        throw new Error('Invalid username or password');
+      }
+
+      // Now sign in with the email
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: profileData.email,
+        password: formData.password,
       });
 
-      if (error) throw error;
+      if (signInError) throw signInError;
 
-      if (data.session) {
-        navigate('/admin/dashboard');
-      }
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+      });
+      
+      navigate('/admin/dashboard');
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to log in",
       });
     } finally {
       setLoading(false);
@@ -46,40 +64,42 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-[350px]">
+    <div className="flex min-h-screen items-center justify-center">
+      <Card className="w-[400px]">
         <CardHeader>
           <CardTitle>Admin Login</CardTitle>
-          <CardDescription>
-            Sign in to access the admin dashboard
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
               <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 required
               />
             </div>
+            
             <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
               <Input
+                id="password"
                 type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
               />
             </div>
+
             <Button
               type="submit"
               className="w-full"
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </CardContent>

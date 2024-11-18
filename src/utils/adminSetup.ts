@@ -4,8 +4,7 @@ import type { Profile } from '@/lib/types';
 interface AdminUserData {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  username: string;
 }
 
 export async function createAdminUser(userData: AdminUserData) {
@@ -14,6 +13,11 @@ export async function createAdminUser(userData: AdminUserData) {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
+      options: {
+        data: {
+          username: userData.username
+        }
+      }
     });
 
     if (authError) throw authError;
@@ -24,8 +28,7 @@ export async function createAdminUser(userData: AdminUserData) {
       .from('profiles')
       .insert({
         id: authData.user.id,
-        first_name: userData.firstName,
-        last_name: userData.lastName,
+        username: userData.username,
         role: 'admin',
         email: userData.email,
       } satisfies Omit<Profile, 'created_at' | 'updated_at'>);
