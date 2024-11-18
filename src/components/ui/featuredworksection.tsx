@@ -85,11 +85,11 @@ const FeaturedWorkSection = () => {
           open={!!selectedWork} 
           onOpenChange={() => setSelectedWork(null)}
         >
-          <DialogContent className="sm:max-w-[90vw] sm:max-h-[90vh] w-auto h-auto bg-background p-0 rounded-lg overflow-hidden">
+          <DialogContent className="sm:max-w-[90vw] sm:max-h-[90vh] w-auto h-auto bg-[#FFF0F5] p-0 rounded-lg overflow-hidden">
             <div className="relative flex items-center justify-center min-h-[50vh] sm:min-h-[80vh]">
               <button
                 onClick={() => setSelectedWork(null)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors z-10"
+                className="absolute top-4 right-4 p-2 rounded-full bg-[#FFF0F5] text-white hover:bg-black/70 transition-colors z-10"
               >
                 <X size={24} />
               </button>
