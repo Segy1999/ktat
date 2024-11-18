@@ -1,12 +1,11 @@
 [build]
-  command = "CI= npm run build"
+  command = "npm install && npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps --force"
   NETLIFY_USE_YARN = "false"
-  CI = ""
 
 [[redirects]]
   from = "/*"
