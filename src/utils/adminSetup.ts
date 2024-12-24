@@ -23,9 +23,7 @@ export async function createAdminUser(userData: AdminUserData) {
         },
         emailRedirectTo: `${window.location.origin}/admin/login`,
         // Attempt to bypass email confirmation temporarily
-        gotrue_meta_security: {
-          captcha_token: null
-        }
+        redirectTo: `${window.location.origin}/admin/login`
       }
     });
 
