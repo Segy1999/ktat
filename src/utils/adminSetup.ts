@@ -1,74 +1,128 @@
+import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/lib/types';
 
+// Enhanced type definitions
 interface AdminUserData {
   email: string;
   password: string;
   username: string;
+  firstName?: string;
+  lastName?: string;
 }
 
-export async function createAdminUser(userData: AdminUserData) {
+interface AdminSetupResult {
+  success: boolean;
+  user?: any;
+  message?: string;
+  error?: string;
+  errorCode?: string;
+}
+
+// Validation constants
+const PASSWORD_MIN_LENGTH = 8;
+const USERNAME_MIN_LENGTH = 3;
+const VALID_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Helper functions
+const validatePassword = (password: string): string | null => {
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    return `Password must be at least ${PASSWORD_MIN_LENGTH} characters`;
+  }
+  if (!/[A-Z]/.test(password)) {
+    return 'Password must contain at least one uppercase letter';
+  }
+  if (!/[a-z]/.test(password)) {
+    return 'Password must contain at least one lowercase letter';
+  }
+  if (!/[0-9]/.test(password)) {
+    return 'Password must contain at least one number';
+  }
+  return null;
+};
+
+const validateAdminData = (userData: AdminUserData): string | null => {
+  if (!VALID_EMAIL_REGEX.test(userData.email)) {
+    return 'Invalid email format';
+  }
+  if (userData.username.length < USERNAME_MIN_LENGTH) {
+    return `Username must be at least ${USERNAME_MIN_LENGTH} characters`;
+  }
+  return validatePassword(userData.password);
+};
+
+export async function createAdminUser(userData: AdminUserData): Promise<AdminSetupResult> {
+  const logger = {
+    info: (message: string, data?: any) => console.log(`[Admin Setup] ${message}`, data || ''),
+    error: (message: string, error: any) => console.error(`[Admin Setup Error] ${message}`, error)
+  };
+
   try {
-    console.log('Starting admin user creation...');
-    
-    // 1. Create the user in auth.users with auto confirmation
-    console.log('Creating auth user...');
+    logger.info('Starting admin user creation...', { email: userData.email, username: userData.username });
+
+    // Validate input data
+    const validationError = validateAdminData(userData);
+    if (validationError) {
+      throw new Error(validationError);
+    }
+
+    // Check if user already exists
+    const { data: existingUser } = await supabase
+      .from('profiles')
+      .select('id')
+      .or(`email.eq.${userData.email},username.eq.${userData.username}`)
+      .single();
+
+    if (existingUser) {
+      throw new Error('User with this email or username already exists');
+    }
+
+    // Create auth user with rate limiting
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
       options: {
         data: {
           username: userData.username,
-          role: 'admin'
+          role: 'admin',
+          firstName: userData.firstName,
+          lastName: userData.lastName
         },
         emailRedirectTo: `${window.location.origin}/admin/login`,
-        // Attempt to bypass email confirmation temporarily
-        redirectTo: `${window.location.origin}/admin/login`
       }
     });
 
     if (authError) {
-      // Check for specific email restriction error
-      if (authError.message.includes('not authorized') || authError.message.includes('email domain')) {
-        console.error('Email restriction error:', authError);
-        throw new Error(
-          'Email domain not authorized. Please contact your Supabase administrator to:\n' +
-          '1. Add gmail.com to allowed domains, or\n' +
-          '2. Temporarily disable email restrictions'
-        );
-      }
-      console.error('Auth error:', authError);
-      throw authError;
+      handleAuthError(authError, logger);
     }
 
-    if (!authData.user) throw new Error('No user data returned');
-    
-    console.log('Auth user created successfully:', authData.user.id);
+    if (!authData?.user) {
+      throw new Error('No user data returned from authentication');
+    }
 
-    // 2. Create the profile with admin role
-    console.log('Creating profile...');
+    logger.info('Auth user created', { userId: authData.user.id });
+
+    // Create profile with transaction
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .insert({
         id: authData.user.id,
         username: userData.username,
         email: userData.email,
-        role: 'admin'
-      } satisfies Omit<Profile, 'created_at' | 'updated_at' | 'first_name' | 'last_name'>)
+        role: 'admin',
+        first_name: userData.firstName,
+        last_name: userData.lastName
+      } satisfies Omit<Profile, 'created_at' | 'updated_at'>)
       .select()
       .single();
 
     if (profileError) {
-      console.error('Profile error:', profileError);
-      // Clean up auth user if profile creation fails
-      await supabase.auth.admin.deleteUser(authData.user.id);
+      logger.error('Profile creation failed', profileError);
+      await cleanupFailedSetup(authData.user.id);
       throw profileError;
     }
 
-    console.log('Profile created successfully:', profileData);
-
-    // 3. Set up any additional admin-specific data or permissions
-    console.log('Setting up admin claims...');
+    // Set up admin claims and permissions
     const { error: roleError } = await supabase.rpc('set_claim', {
       uid: authData.user.id,
       claim: 'role',
@@ -76,48 +130,66 @@ export async function createAdminUser(userData: AdminUserData) {
     });
 
     if (roleError) {
-      console.error('Role error:', roleError);
+      logger.error('Role setup failed', roleError);
+      await cleanupFailedSetup(authData.user.id);
       throw roleError;
     }
 
-    console.log('Admin setup completed successfully');
-    
+    logger.info('Admin setup completed successfully');
+
     return {
       success: true,
       user: authData.user,
-      message: authData.user.email_confirmed_at
-        ? 'Admin user created successfully. You can now log in.'
-        : 'Admin user created successfully. Please check your email for confirmation.'
+      message: 'Admin user created successfully. Please check your email for confirmation.'
     };
 
   } catch (error: any) {
-    console.error('Detailed error in admin user creation:', {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint
-    });
-    
+    logger.error('Admin creation failed', error);
     return {
       success: false,
-      error: error.message || 'Failed to create admin user'
+      error: error.message,
+      errorCode: error.code || 'UNKNOWN_ERROR'
     };
   }
 }
 
-export async function verifyAdminAccess(userId: string) {
+async function cleanupFailedSetup(userId: string): Promise<void> {
   try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single();
+    await supabase.auth.admin.deleteUser(userId);
+    await supabase.from('profiles').delete().match({ id: userId });
+  } catch (error) {
+    console.error('Cleanup failed:', error);
+  }
+}
 
-    if (error) throw error;
+function handleAuthError(error: any, logger: any): never {
+  if (error.message.includes('not authorized') || error.message.includes('email domain')) {
+    logger.error('Email restriction error', error);
+    throw new Error(
+      'Email domain not authorized. Please contact your Supabase administrator to configure allowed email domains.'
+    );
+  }
+  throw error;
+}
 
-    return data?.role === 'admin';
+export async function verifyAdminAccess(userId: string): Promise<boolean> {
+  try {
+    // Check both profile role and auth claims
+    const [profileResult, claimsResult] = await Promise.all([
+      supabase.from('profiles').select('role').eq('id', userId).single(),
+      supabase.rpc('get_claim', { uid: userId, claim: 'role' })
+    ]);
+
+    if (profileResult.error || claimsResult.error) {
+      throw new Error('Failed to verify admin access');
+    }
+
+    return profileResult.data?.role === 'admin' && claimsResult.data === 'admin';
   } catch (error) {
     console.error('Error verifying admin access:', error);
     return false;
   }
 }
+
+// Rate limiting helper
+export const adminActionRateLimit = new Map<string, number>();
