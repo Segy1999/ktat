@@ -1,25 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-
-type PortfolioItem = {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-};
+import { useSupabase } from '@/hooks/use-supabase';
+import { PortfolioItem } from '@/lib/types';
 
 const Portfolio = () => {
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { getPortfolioItems } = useSupabase();
 
-  const portfolioItems = [
-    { id: 1, title: "Traditional", description: "Classic tattoo designs", image: "/images/portfolio/boondocks.png" },
-    { id: 2, title: "Neo-Traditional", description: "Modern take on classics", image: "/images/portfolio/dragon.png" },
-    { id: 3, title: "Blackwork", description: "Bold black designs", image: "/images/portfolio/frsnchise.png" },
-    { id: 4, title: "Watercolor", description: "Artistic watercolor style", image: "/images/portfolio/luvers.png" },
-    { id: 5, title: "Minimalist", description: "Simple, clean designs", image: "/images/portfolio/naruto.png" },
-  ];
+  useEffect(() => {
+    const fetchPortfolioItems = async () => {
+      try {
+        const items = await getPortfolioItems();
+        if (items) {
+          const nonFeaturedItems = items.filter(item => !item.featured);
+          setPortfolioItems(nonFeaturedItems);
+        }
+      } catch (error) {
+        console.error('Error fetching portfolio items:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPortfolioItems();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-24 bg-background flex items-center justify-center">
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1 }}
+          className="w-12 h-12 border-4 border-t-primary border-r-primary rounded-full"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-24 bg-background">
@@ -45,7 +65,7 @@ const Portfolio = () => {
             >
               <div className="aspect-square rounded-lg overflow-hidden">
                 <img 
-                  src={item.image} 
+                  src={item.image_url} 
                   alt={item.title} 
                   className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
                 />
@@ -83,7 +103,7 @@ const Portfolio = () => {
                   >
                     <div className="aspect-square w-full">
                       <img
-                        src={selectedItem.image}
+                        src={selectedItem.image_url}
                         alt={selectedItem.title}
                         className="w-full h-full object-cover"
                       />

@@ -1,25 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ArrowRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
-
-type FeaturedWork = {
-  id: number;
-  image: string;
-  alt: string;
-};
+import { useSupabase } from '@/hooks/use-supabase';
+import { PortfolioItem } from '@/lib/types';
+import { motion } from "framer-motion";
 
 const FeaturedWorkSection = () => {
-  const [selectedWork, setSelectedWork] = useState<FeaturedWork | null>(null);
+  const [selectedWork, setSelectedWork] = useState<PortfolioItem | null>(null);
+  const [featuredWorks, setFeaturedWorks] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { getFeaturedWorks } = useSupabase();
 
-  const featuredWorks = [
-    { id: 1, image: "/images/home/h1.jpeg", alt: "Featured Tattoo 1" },
-    { id: 2, image: "/images/home/h2.jpeg", alt: "Featured Tattoo 2" },
-    { id: 3, image: "/images/home/h3.jpeg", alt: "Featured Tattoo 3" },
-    { id: 4, image: "/images/home/h4.jpeg", alt: "Featured Tattoo 4" },
-    { id: 5, image: "/images/home/h5.jpeg", alt: "Featured Tattoo 5" },
-    { id: 6, image: "/images/home/h6.jpeg", alt: "Featured Tattoo 6" },
-  ];
+  useEffect(() => {
+    const fetchFeaturedWorks = async () => {
+      try {
+        const items = await getFeaturedWorks();
+        if (items) {
+          setFeaturedWorks(items);
+        }
+      } catch (error) {
+        console.error('Error fetching featured works:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedWorks();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-12 sm:py-16 md:py-20 bg-background flex items-center justify-center">
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1 }}
+          className="w-12 h-12 border-4 border-t-primary border-r-primary rounded-full"
+        />
+      </section>
+    );
+  }
 
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-background">
@@ -35,14 +55,14 @@ const FeaturedWorkSection = () => {
             >
               <div className="absolute inset-0 p-6 sm:p-8 flex flex-col">
                 <h3 className="text-xl font-semibold text-black dark:text-foreground mb-4 relative z-10">
-                  {work.alt}
+                  {work.title}
                 </h3>
                 
                 <div className="relative flex-grow w-full h-full">
                   <div className="absolute inset-0">
                     <img 
-                      src={work.image} 
-                      alt={work.alt}
+                      src={work.image_url} 
+                      alt={work.title}
                       className="w-full h-full object-cover rounded-lg"
                     />
                     <div 
@@ -65,7 +85,7 @@ const FeaturedWorkSection = () => {
               <button
                 onClick={() => setSelectedWork(work)}
                 className="absolute inset-0 w-full h-full cursor-pointer z-20"
-                aria-label={`View ${work.alt}`}
+                aria-label={`View ${work.title}`}
               />
             </div>
           ))}
@@ -96,14 +116,14 @@ const FeaturedWorkSection = () => {
               {selectedWork && (
                 <div className="relative w-full h-full flex flex-col items-center justify-center">
                   <img
-                    src={selectedWork.image}
-                    alt={selectedWork.alt}
+                    src={selectedWork.image_url}
+                    alt={selectedWork.title}
                     className="max-w-full max-h-[80vh] object-contain"
                     style={{ margin: 'auto' }}
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-t from-black/80 to-transparent">
                     <h3 className="text-lg sm:text-xl font-semibold text-white">
-                      {selectedWork.alt}
+                      {selectedWork.title}
                     </h3>
                   </div>
                 </div>
