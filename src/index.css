@@ -81,6 +81,10 @@
   animation: slideUp 0.5s ease-out forwards;
 }
 
+.booking-form-container {
+  margin-top: 60px; /* Adjust this value based on your navbar height */
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;

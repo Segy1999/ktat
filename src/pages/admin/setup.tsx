@@ -55,9 +55,9 @@ export default function AdminSetup() {
       if (result.success) {
         toast({
           title: "Success",
-          description: "Admin user created successfully. Please check your email for verification.",
+          description: "Admin account created. Please check your email to confirm your account before logging in.",
         });
-        // Disable setup after successful creation
+        // Navigate to login page after successful creation
         navigate('/admin/login');
       } else {
         toast({

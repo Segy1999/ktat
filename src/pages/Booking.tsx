@@ -240,7 +240,7 @@ const Booking = () => {
         exit={{ opacity: 0, y: -20 }}
         className="container mx-auto px-4 py-8"
       >
-        <div className="max-w-2xl mx-auto">
+        <div className="booking-form-container max-w-2xl mx-auto">
           <Card>
             <CardHeader>
               <CardTitle>Book Your Session</CardTitle>
