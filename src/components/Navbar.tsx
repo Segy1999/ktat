@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X, Moon, Sun } from "lucide-react";
@@ -6,11 +6,48 @@ import { Switch } from "@/components/ui/switch"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
 
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      return savedTheme === "dark";
+    }
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem("theme")) {
+        setIsDark(e.matches);
+        updateTheme(e.matches);
+    }
+  };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    updateTheme(isDark);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  const updateTheme= (dark: boolean) =>{
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
   const toggleTheme = () => {
+    const newTheme = isDark;
     setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
+    updateTheme(!newTheme);
+    localStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
   const menuItems = [
