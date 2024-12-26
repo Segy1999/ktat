@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/lib/types';
 
-// Enhanced type definitions
 interface AdminUserData {
   email: string;
   password: string;
@@ -19,12 +18,10 @@ interface AdminSetupResult {
   errorCode?: string;
 }
 
-// Validation constants
 const PASSWORD_MIN_LENGTH = 8;
 const USERNAME_MIN_LENGTH = 3;
 const VALID_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Helper functions
 const validatePassword = (password: string): string | null => {
   if (password.length < PASSWORD_MIN_LENGTH) {
     return `Password must be at least ${PASSWORD_MIN_LENGTH} characters`;
@@ -66,18 +63,22 @@ export async function createAdminUser(userData: AdminUserData): Promise<AdminSet
       throw new Error(validationError);
     }
 
-    // Check if user already exists
-    const { data: existingUser } = await supabase
+    // Fix: Properly format the OR condition in the existing user check
+    const { data: existingUser, error: existingUserError } = await supabase
       .from('profiles')
       .select('id')
       .or(`email.eq.${userData.email},username.eq.${userData.username}`)
       .single();
 
+    if (existingUserError && existingUserError.code !== 'PGRST116') {
+      throw existingUserError;
+    }
+
     if (existingUser) {
       throw new Error('User with this email or username already exists');
     }
 
-    // Create auth user with rate limiting
+    // Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
@@ -102,17 +103,23 @@ export async function createAdminUser(userData: AdminUserData): Promise<AdminSet
 
     logger.info('Auth user created', { userId: authData.user.id });
 
-    // Create profile with transaction
+    // Add delay to ensure auth user is properly created
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Create profile with upsert instead of insert to handle race conditions
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .insert({
+      .upsert({
         id: authData.user.id,
         username: userData.username,
         email: userData.email,
         role: 'admin',
         first_name: userData.firstName,
-        last_name: userData.lastName
-      } satisfies Omit<Profile, 'created_at' | 'updated_at'>)
+        last_name: userData.lastName,
+        updated_at: new Date().toISOString()
+      } satisfies Partial<Profile>, {
+        onConflict: 'id'
+      })
       .select()
       .single();
 
@@ -174,7 +181,6 @@ function handleAuthError(error: any, logger: any): never {
 
 export async function verifyAdminAccess(userId: string): Promise<boolean> {
   try {
-    // Check both profile role and auth claims
     const [profileResult, claimsResult] = await Promise.all([
       supabase.from('profiles').select('role').eq('id', userId).single(),
       supabase.rpc('get_claim', { uid: userId, claim: 'role' })
@@ -191,5 +197,4 @@ export async function verifyAdminAccess(userId: string): Promise<boolean> {
   }
 }
 
-// Rate limiting helper
 export const adminActionRateLimit = new Map<string, number>();
