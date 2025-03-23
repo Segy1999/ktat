@@ -187,7 +187,7 @@ export const CustomTattooForm = ({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             <Card className="overflow-hidden shadow-xl h-full flex flex-col text-lg">
-              <CardHeader className="relative p-6">
+              <CardHeader className="relative p-6 pb-3 flex-shrink-0">
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -206,8 +206,8 @@ export const CustomTattooForm = ({
               </CardHeader>
               
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col flex-grow">
-                  <CardContent className="p-8 flex-grow overflow-y-auto">
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col flex-grow overflow-hidden">
+                  <CardContent className="p-8 pt-4 overflow-y-auto flex-grow">
                     {/* Step 1: Tattoo Idea */}
                     {step === 1 && (
                       <motion.div>
@@ -629,7 +629,7 @@ export const CustomTattooForm = ({
                     )}
                   </CardContent>
                   
-                  <CardFooter className="flex justify-between border-t p-6">
+                  <CardFooter className="flex justify-between border-t p-6 flex-shrink-0 bg-background sticky bottom-0">
                     <Button 
                       type="button" 
                       variant="outline" 
