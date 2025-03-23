@@ -5,8 +5,11 @@ import { Particles } from "@/components/ui/particles";
 import ShootingStar from "@/components/ui/shooting-star";
 import Typewriter from "typewriter-effect";
 import FeaturedWorkSection from '@/components/ui/featuredworksection';
+import { useBooking } from "@/contexts/BookingContext";
 
 const Index = () => {
+  const { openBookingFlow } = useBooking();
+  
   const featuredWorks = [
     { id: 1, image: "/images/home/h1.jpeg", alt: "Featured Tattoo 1" },
     { id: 2, image: "/images/home/h2.jpeg", alt: "Featured Tattoo 2" },
@@ -49,13 +52,13 @@ const Index = () => {
           <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
             Where Art Meets Skin
           </p>
-          <Link
-            to="/booking"
+          <button
+            onClick={openBookingFlow}
             className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue-500 rounded-full hover:bg-opacity-90 transition-colors"
           >
             Book Now
             <ArrowRight className="ml-2" size={20} />
-          </Link>
+          </button>
         </motion.div>
       </section>
 

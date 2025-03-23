@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { Switch } from "@/components/ui/switch"
+import { useBooking } from "@/contexts/BookingContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,8 @@ const Navbar = () => {
 
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+
+  const { openBookingFlow } = useBooking();
 
   useEffect(() => {
 
@@ -53,7 +56,7 @@ const Navbar = () => {
   const menuItems = [
     { title: "Home", path: "/" },
     { title: "Portfolio", path: "/portfolio" },
-    { title: "Book Now", path: "/booking" },
+    { title: "Book Now", action: openBookingFlow },
     { title: "Policy", path: "/policy" },
     { title: "Contact", path: "/contact" },
   ];
@@ -69,13 +72,23 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {menuItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                {item.title}
-              </Link>
+              item.action ? (
+                <button
+                  key={item.title}
+                  onClick={item.action}
+                  className="text-foreground/80 hover:text-foreground transition-colors"
+                >
+                  {item.title}
+                </button>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="text-foreground/80 hover:text-foreground transition-colors"
+                >
+                  {item.title}
+                </Link>
+              )
             ))}
             {/* Theme Toggle Switch */}
             <div className="flex items-center space-x-2">
@@ -110,14 +123,27 @@ const Navbar = () => {
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               {menuItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground/80 hover:text-foreground hover:bg-accent transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.title}
-                </Link>
+                item.action ? (
+                  <button
+                    key={item.title}
+                    onClick={() => {
+                      item.action();
+                      setIsOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-foreground/80 hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    {item.title}
+                  </button>
+                ) : (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="block px-3 py-2 rounded-md text-base font-medium text-foreground/80 hover:text-foreground hover:bg-accent transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.title}
+                  </Link>
+                )
               ))}
               {/* Mobile Theme Toggle */}
               <div className="flex items-center space-x-2 px-3 py-2">

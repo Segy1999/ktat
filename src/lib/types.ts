@@ -46,6 +46,16 @@ export interface ContentItem {
   updated_at: string;
 }
 
+export interface FlashDesign {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string;
+  price: number;
+  category: string;
+  available: boolean;
+}
+
 export interface Database {
   public: {
     Tables: {

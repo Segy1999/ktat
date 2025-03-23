@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/lib/supabase';
 import { useToast } from './use-toast';
+import { FlashDesign } from '@/lib/types';
 
 export const useSupabase = () => {
   const { toast } = useToast();
@@ -95,10 +96,78 @@ export const useSupabase = () => {
     }
   }, [handleError]);
 
+  const getFlashDesigns = useCallback(async (): Promise<FlashDesign[] | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('flash_designs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      handleError(error as Error);
+      return null;
+    }
+  }, [handleError]);
+
+  const getFlashDesignById = useCallback(async (id: number): Promise<FlashDesign | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('flash_designs')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      handleError(error as Error);
+      return null;
+    }
+  }, [handleError]);
+
+  const createFlashDesignBooking = useCallback(async (bookingData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    flash_design_id: number;
+    tattoo_size: string;
+    tattoo_placement: string;
+    preferred_date?: string | null;
+    availability?: string[] | null;
+    pronouns?: string | null;
+    allergies?: string | null;
+    instagram?: string | null;
+    special_requests?: string | null;
+  }) => {
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert({
+          ...bookingData,
+          is_custom: false,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      handleError(error as Error);
+      throw error;
+    }
+  }, [handleError]);
+
   return {
     createBooking,
     uploadImage,
     getFeaturedWorks,
     getPortfolioItems,
+    getFlashDesigns,
+    getFlashDesignById,
+    createFlashDesignBooking,
   };
 };

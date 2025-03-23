@@ -42,15 +42,40 @@ export default function Dashboard() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+          <TabsTrigger value="images">Image Management</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <Overview />
         </TabsContent>
-        <TabsContent value="portfolio" className="space-y-4">
-          <PortfolioManager />
+        <TabsContent value="images" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Image Management</CardTitle>
+              <CardDescription>
+                Upload and manage images for different sections of your website
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="home" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="home">Home Page</TabsTrigger>
+                  <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+                  <TabsTrigger value="flash">Flash Designs</TabsTrigger>
+                </TabsList>
+                <TabsContent value="home" className="mt-4">
+                  <PortfolioManager section="home" />
+                </TabsContent>
+                <TabsContent value="portfolio" className="mt-4">
+                  <PortfolioManager section="portfolio" />
+                </TabsContent>
+                <TabsContent value="flash" className="mt-4">
+                  <PortfolioManager section="flash" />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
         </TabsContent>
         <TabsContent value="bookings" className="space-y-4">
           <BookingSettings />
