@@ -58,7 +58,11 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
 
   const uploadReferencePhotos = async (files: File[]): Promise<string[]> => {
     const uploadPromises = files.map(async (file) => {
-      const path = `reference-photos/${Date.now()}-${file.name}`;
+      // Create a clean filename
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '-').toLowerCase();
+      const timestamp = Date.now();
+      const path = `${timestamp}-${cleanFileName}`;
+      
       const url = await uploadImage(file, path);
       if (!url) {
         throw new Error(`Failed to upload ${file.name}`);
