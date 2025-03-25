@@ -10,20 +10,31 @@ export interface Profile {
 }
 
 export interface Booking {
-  id: number;
+  id: string;
+  created_at: string;
+  updated_at: string;
+  
   first_name: string;
   last_name: string;
   email: string;
   phone: string;
-  instagram?: string;
-  preferred_date?: string;
-  special_requests?: string;
-  reference_photos?: string[];
-  referral_source?: string;
-  other_referral?: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
-  created_at: string;
-  updated_at: string;
+  pronouns: string | null;
+  
+  is_custom: boolean;
+  tattoo_idea: string | null;
+  tattoo_size: string | null;
+  tattoo_placement: string | null;
+  reference_photos: string[] | null;
+  availability: string[] | null;
+  allergies: string | null;
+  is_over_18: boolean;
+  
+  flash_design_id: number | null;
+  
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'rejected';
+  
+  special_requests: string | null;
+  admin_notes: string | null;
 }
 
 export interface PortfolioItem {

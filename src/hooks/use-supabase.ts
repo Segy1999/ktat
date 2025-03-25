@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { Tables } from '@/lib/supabase';
+import type { Database } from '@/lib/types';
 import { useToast } from './use-toast';
 import { FlashDesign } from '@/lib/types';
 
@@ -16,7 +16,7 @@ export const useSupabase = () => {
     });
   }, [toast]);
 
-  const createBooking = useCallback(async (booking: Tables['bookings']['Insert']) => {
+  const createBooking = useCallback(async (booking: Database['public']['Tables']['bookings']['Insert']) => {
     try {
       const { data, error } = await supabase
         .from('bookings')
