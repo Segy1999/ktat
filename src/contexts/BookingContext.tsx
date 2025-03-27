@@ -114,7 +114,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       
       // Submit to Supabase
       await createBooking(bookingData);
-      
+    
       // Dismiss loading toast and show success
       toast.dismiss(loadingToast);
       toast.success("Your custom tattoo request has been submitted! We'll contact you soon to discuss details.", {

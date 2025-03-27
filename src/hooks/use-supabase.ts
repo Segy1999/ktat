@@ -18,18 +18,16 @@ export const useSupabase = () => {
 
   const createBooking = useCallback(async (booking: Database['public']['Tables']['bookings']['Insert']) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('bookings')
-        .insert(booking)
-        .select()
-        .single();
-
+        .insert(booking);
+  
       if (error) {
         console.error('Booking error:', error);
         throw error;
       }
       
-      return data;
+      return true; // Return success boolean instead of the data
     } catch (error) {
       console.error('Error creating booking:', error);
       throw error;
@@ -143,18 +141,16 @@ export const useSupabase = () => {
     special_requests?: string | null;
   }) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('bookings')
         .insert({
           ...bookingData,
           is_custom: false,
           status: 'pending'
-        })
-        .select()
-        .single();
-
+        });
+  
       if (error) throw error;
-      return data;
+      return true;
     } catch (error) {
       handleError(error as Error);
       throw error;
