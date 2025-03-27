@@ -24,10 +24,11 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from 'date-fns';
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageSquare } from "lucide-react";
+import Chat from "@/components/chat/Chat";
 
 interface Booking {
-  id: number;
+  id: string; // Changed to string since we're using UUIDs
   first_name: string;
   last_name: string;
   email: string;
@@ -36,6 +37,9 @@ interface Booking {
   special_requests: string | null;
   status: string;
   created_at: string;
+  is_custom: boolean;
+  tattoo_idea?: string;
+  flash_design_id?: number;
 }
 
 export function BookingSettings() {
@@ -68,7 +72,7 @@ export function BookingSettings() {
     }
   }
 
-  async function updateBookingStatus(id: number, status: string) {
+  async function updateBookingStatus(id: string, status: string) {
     try {
       const { error } = await supabase
         .from('bookings')
@@ -159,48 +163,58 @@ export function BookingSettings() {
         </CardContent>
       </Card>
 
-      <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
-        <DialogContent>
+      <Dialog open={!!selectedBooking} onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
+        <DialogContent className="sm:max-w-[600px]">
           {selectedBooking && (
             <>
               <DialogHeader>
                 <DialogTitle>Booking Details</DialogTitle>
                 <DialogDescription>
-                  Review and manage booking request
+                  Review, manage, and chat about the booking request
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
-                <div>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2 border-b pb-4">
                   <h4 className="font-medium">Contact Information</h4>
                   <p className="text-sm text-muted-foreground">
+                    Name: {selectedBooking.first_name} {selectedBooking.last_name}<br />
                     Email: {selectedBooking.email}<br />
                     Phone: {selectedBooking.phone}
                   </p>
+                  {selectedBooking.special_requests && (
+                    <div className="pt-2">
+                      <h4 className="font-medium">Special Requests</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedBooking.special_requests}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                {selectedBooking.special_requests && (
-                  <div>
-                    <h4 className="font-medium">Special Requests</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedBooking.special_requests}
-                    </p>
+
+                <div className="flex space-x-2 mb-4">
+                  {selectedBooking.status !== 'confirmed' && (
+                    <Button
+                      variant="outline"
+                      onClick={() => updateBookingStatus(selectedBooking.id, 'confirmed')}
+                    >
+                      Confirm Booking
+                    </Button>
+                  )}
+                  {selectedBooking.status !== 'rejected' && (
+                    <Button
+                      variant="destructive"
+                      onClick={() => updateBookingStatus(selectedBooking.id, 'rejected')}
+                    >
+                      Reject Booking
+                    </Button>
+                  )}
+                </div>
+
+                {selectedBooking.status === 'confirmed' && (
+                  <div className="border-t pt-4">
+                    <Chat bookingId={selectedBooking.id} />
                   </div>
                 )}
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => updateBookingStatus(selectedBooking.id, 'confirmed')}
-                    disabled={selectedBooking.status === 'confirmed'}
-                  >
-                    Confirm
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => updateBookingStatus(selectedBooking.id, 'rejected')}
-                    disabled={selectedBooking.status === 'rejected'}
-                  >
-                    Reject
-                  </Button>
-                </div>
               </div>
             </>
           )}

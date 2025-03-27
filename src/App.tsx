@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/admin/Login";
 import AdminSetup from "./pages/admin/setup";
+import MyBookings from "./pages/MyBookings";
 import { BookingProvider } from "@/contexts/BookingContext";
 import FlashDesigns from "./pages/FlashDesigns";
 
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="/admin/dashboard" element={<Dashboard />} />
                 <Route path="/admin/setup" element={<AdminSetup />} />
                 <Route path="/flash-designs" element={<FlashDesigns />} />
+                <Route path="/my-bookings" element={<MyBookings />} />
               </Routes>
             </main>
             <Footer />

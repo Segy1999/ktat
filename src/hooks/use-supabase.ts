@@ -1,11 +1,23 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/lib/types';
 import { useToast } from './use-toast';
 import { FlashDesign } from '@/lib/types';
 
+// Define Message type
+export interface Message {
+  id: string;
+  booking_id: string;
+  sender_id: string;
+  message: string;
+  created_at: string;
+}
+
 export const useSupabase = () => {
   const { toast } = useToast();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isFetchingMessages, setIsFetchingMessages] = useState(false);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
 
   const handleError = useCallback((error: Error) => {
     console.error('Supabase error:', error);
@@ -18,15 +30,29 @@ export const useSupabase = () => {
 
   const createBooking = useCallback(async (booking: Database['public']['Tables']['bookings']['Insert']) => {
     try {
-      const { error } = await supabase
+      console.log('Attempting to create booking with data:', booking);
+      
+      // Validate required fields before sending
+      const requiredFields = ['first_name', 'last_name', 'email', 'phone', 'is_custom'];
+      for (const field of requiredFields) {
+        if (booking[field as keyof typeof booking] === undefined) {
+          console.error(`Missing required field: ${field}`);
+          throw new Error(`Missing required field: ${field}`);
+        }
+      }
+      
+      const { error, data } = await supabase
         .from('bookings')
-        .insert(booking);
-  
+        .insert(booking)
+        .select('id')
+        .single();
+    
       if (error) {
         console.error('Booking error:', error);
         throw error;
       }
       
+      console.log('Booking created successfully:', data);
       return true; // Return success boolean instead of the data
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -157,6 +183,85 @@ export const useSupabase = () => {
     }
   }, [handleError]);
 
+  // Fetch messages for a booking
+  const fetchMessages = useCallback(async (bookingId: string) => {
+    if (!bookingId) return;
+    setIsFetchingMessages(true);
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('booking_id', bookingId)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        handleError(error as Error);
+        setMessages([]);
+        return;
+      }
+
+      setMessages(data || []);
+    } catch (error) {
+      handleError(error as Error);
+      setMessages([]);
+    } finally {
+      setIsFetchingMessages(false);
+    }
+  }, [handleError]);
+
+  // Send a new message
+  const sendMessage = useCallback(async (bookingId: string, message: string) => {
+    if (!message?.trim()) return;
+    setIsSendingMessage(true);
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert({
+          booking_id: bookingId,
+          message: message.trim(),
+          sender_id: (await supabase.auth.getUser()).data.user?.id
+        });
+
+      if (error) {
+        handleError(error as Error);
+      }
+    } catch (error) {
+      handleError(error as Error);
+    } finally {
+      setIsSendingMessage(false);
+    }
+  }, [handleError]);
+
+  // Subscribe to new messages
+  const subscribeToMessages = useCallback((bookingId: string, callback?: (payload: any) => void) => {
+    const channel = supabase
+      .channel(`public:messages:booking_id=eq.${bookingId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `booking_id=eq.${bookingId}`
+        },
+        (payload) => {
+          console.log('New message received:', payload);
+          setMessages((currentMessages) => [...currentMessages, payload.new as Message]);
+          if (callback) callback(payload);
+        }
+      )
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`Subscribed to messages for booking ${bookingId}`);
+        }
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          handleError(err || new Error(`Subscription error: ${status}`));
+        }
+      });
+
+    return channel;
+  }, [handleError]);
+
   return {
     createBooking,
     uploadImage,
@@ -165,5 +270,11 @@ export const useSupabase = () => {
     getFlashDesigns,
     getFlashDesignById,
     createFlashDesignBooking,
+    messages,
+    isFetchingMessages,
+    isSendingMessage,
+    fetchMessages,
+    sendMessage,
+    subscribeToMessages,
   };
 };

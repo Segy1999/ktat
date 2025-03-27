@@ -4,34 +4,32 @@ import { motion } from "framer-motion";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { Switch } from "@/components/ui/switch"
 import { useBooking } from "@/contexts/BookingContext";
+import { useUser } from '@supabase/auth-helpers-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(() => {
-
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       return savedTheme === "dark";
     }
-
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   const { openBookingFlow } = useBooking();
+  const user = useUser();
 
   useEffect(() => {
-
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const handleChange = (e: MediaQueryListEvent) => {
       if (!localStorage.getItem("theme")) {
         setIsDark(e.matches);
         updateTheme(e.matches);
-    }
-  };
+      }
+    };
 
     mediaQuery.addEventListener("change", handleChange);
-
     updateTheme(isDark);
 
     return () => {
@@ -39,13 +37,14 @@ const Navbar = () => {
     };
   }, []);
 
-  const updateTheme= (dark: boolean) =>{
+  const updateTheme = (dark: boolean) => {
     if (dark) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
   };
+
   const toggleTheme = () => {
     const newTheme = isDark;
     setIsDark(!isDark);
@@ -59,6 +58,7 @@ const Navbar = () => {
     { title: "Book Now", action: openBookingFlow },
     { title: "Policy", path: "/policy" },
     { title: "Contact", path: "/contact" },
+    ...(user ? [{ title: "My Bookings", path: "/my-bookings" }] : []),
   ];
 
   return (

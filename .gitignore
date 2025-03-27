@@ -62,3 +62,7 @@ temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Documentation files
+chat.md
+error.md
